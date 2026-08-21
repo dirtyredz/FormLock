@@ -3,6 +3,9 @@
 Keeps Cat/Bat/Aqua form equipped through item pickups and bare-hand harvests, instead of the
 game silently kicking you back to human form.
 
+**Status:** 🚀 **Published** — v1.0.0 live on Nexus as
+[mod 141](https://www.nexusmods.com/moonlightpeaks/mods/141).
+
 ## The bug this fixes
 
 Reported behaviour: picking up an item while in Cat Form reverts you to human form to do it.
