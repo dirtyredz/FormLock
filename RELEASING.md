@@ -20,9 +20,8 @@ Note that is **not** the dev deploy path. `dotnet build` deploys to
 plain `plugins/FormLock/` layout. `pack.ps1` builds with `SkipDeploy=true`, so packaging never
 overwrites the copy under test.
 
-The script reads the version from the csproj and **refuses to pack if `Plugin.cs` disagrees** —
-the two are reported to players separately, and a mismatch means an archive that lies about what
-is inside it.
+The script reads the version from the csproj; `Plugin.cs` derives the same value at build time via
+`ModBuildInfo.Version`, so the archive name and the version the DLL reports can never disagree.
 
 ## No test project, on purpose
 
@@ -35,7 +34,7 @@ anything real. Verification is manual — see [TESTING.md](TESTING.md).
 
 Automated/self-evident checks, verified for 1.0.0:
 
-- [x] **Versions agree** — csproj `1.0.0`, `PluginVersion` `1.0.0`
+- [x] **Version set in the csproj** — `Plugin.cs` derives it via `ModBuildInfo.Version`
 - [x] **CHANGELOG** has exactly one entry for this version
 - [x] **Diagnostics off** — `VerboseLogging` defaults to `false`
 - [x] **Save-safe** — no writes to `GameData.json`. The patch only skips a call
