@@ -10,6 +10,15 @@ Manual, because there is nothing here a console runner could exercise — see
 | Cat Form survives a loose-item pickup | Walked up to a dropped item in Cat Form; item landed in inventory, form stayed on |
 | Cat Form survives a bare-hand harvest | Harvested a no-tool node in Cat Form; form stayed on |
 | `GameInventory.TryGrabPreviousGrabbedItem`'s no-op path | Confirmed indirectly — no second unequip/re-equip flicker was observed, consistent with the item never having been dropped in the first place |
+| Pickup-stutter fix (Cat Form) | Confirmed 2026-08-22: walking through a loose item in Cat Form no longer snaps movement to a halt; `LogOutput.log` showed `Suppressed CharacterMover.StopMove during form pickup.` |
+
+## 2026-08-22 — in-game test round (after the pickup-stutter deploy)
+
+Fresh dev build deployed to `plugins/MoonlightPeaksMods/FormLock/`; owner ran the test script and
+reported **all items good**: the pickup-stutter fix confirmed working (Cat Form, smooth, log lines
+present), Bat/Aqua pickup + bare-hand harvest keep form, and the config toggles gate their own
+behaviour. This confirms the WIP Feature 2 works in-game — remaining before a release is only the
+CHANGELOG entry + version bump (not yet authorised).
 
 Tested on a dedicated test save (`80f8b6b7-647c-42fc-8ca2-bf0411bd4d3f`, "Dirtyredz (FormLock
 Test)") duplicated from the real save specifically for this, so nothing here risked the original.
@@ -25,10 +34,10 @@ Test)") duplicated from the real save specifically for this, so nothing here ris
 
 ## Still to verify
 
-- [ ] **Bat Form** — pickup and harvest, both untested in a real session
-- [ ] **Aqua Form** — pickup and harvest, both untested in a real session
-- [ ] **Each config toggle actually gates its own behaviour** — `ApplyToPickup`,
-      `ApplyToHarvest`, `KeepCatForm`, `KeepBatForm`, `KeepAquaForm`, `Enabled`
+- [x] **Bat Form** — pickup and harvest — confirmed 2026-08-22 (owner test round)
+- [x] **Aqua Form** — pickup and harvest — confirmed 2026-08-22 (owner test round)
+- [x] **Each config toggle actually gates its own behaviour** — `ApplyToPickup`,
+      `ApplyToHarvest`, `KeepCatForm`, `KeepBatForm`, `KeepAquaForm`, `Enabled` — confirmed 2026-08-22
 - [ ] **Fresh install** — delete the config, launch, check defaults and Mod Menu rendering
 - [ ] **Save diff** — back up, play a session using the mod normally, confirm no unexpected
       change beyond ordinary play

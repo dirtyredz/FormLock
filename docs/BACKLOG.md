@@ -9,10 +9,11 @@ _None._
 
 ## P1 — should-fix
 
-- **Finish or shelve the WIP pickup-stutter feature (Feature 2).** It's committed but unreleased
-  (`PickupStutterPatches`). Before it ships it needs: a real in-game confirmation the stutter is
-  gone, and its own CHANGELOG + version bump. Until then it rides along in the DLL, on no config
-  path unless `ApplyToPickup`.
+- **Ship the pickup-stutter feature (Feature 2).** ✅ **Confirmed working in-game 2026-08-22** (Cat
+  Form smooth, log lines present; see [../TESTING.md](../TESTING.md)). Remaining before release:
+  a CHANGELOG entry + `<Version>` bump in `src/FormLock.csproj` (e.g. 1.1.0) — **not yet authorised**;
+  the original ask was explicitly "do not publish it." Until released it rides along in the DLL, on
+  no config path unless `ApplyToPickup`.
   - ✅ **Resolved (2026-08-22, decompile analysis):** harvest does **not** want the same treatment.
     The activation-time halt comes from `BasePlayerState.OnActivate`'s
     `if (!isInputAllowed) InputBlocker.Add("BasePlayerState")`; `PlayerHarvestState` overrides
@@ -27,10 +28,10 @@ _None._
   same-shape use appears. _(Source: 2026-08-22 structural review.)_
 - **Config read as `FormLockPlugin` statics from the patches.** Fine at 7 entries; if the config
   set grows materially, extract a `Config` holder instead of widening the coupling. _(2026-08-22.)_
-- **Hand-test Bat & Aqua forms** — pickup + harvest, both untested in a real session. Same code
-  path as Cat, but unverified. _(From [../TESTING.md](../TESTING.md).)_
-- **Verify each config toggle gates its own behaviour**; fresh-install defaults + Mod Menu render;
-  multiple pickups/harvests in a row; save-diff after a normal session. _(From TESTING.md.)_
+- ✅ **Hand-test Bat & Aqua forms** — pickup + harvest — done 2026-08-22 (owner test round).
+- ✅ **Config toggles gate their own behaviour** — verified 2026-08-22. Still open from the same
+  list: **fresh-install defaults + Mod Menu render**, and a **save-diff after a normal session**.
+  _(From [../TESTING.md](../TESTING.md).)_
 
 ## Known cosmetic (won't-fix, documented)
 
