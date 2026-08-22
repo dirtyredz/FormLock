@@ -30,6 +30,15 @@ namespace FormLock
     /// The timer-zeroing patches (OnActivate prefix / OnDeactivate postfix) are kept so the
     /// coroutine still exits in two frames rather than the default 0.46 s, eliminating the
     /// HarvestTrigger-animation pop as a belt-and-suspenders measure.
+    ///
+    /// Scope — pickup only, deliberately. The halt is triggered by BasePlayerState.OnActivate's
+    /// `if (!isInputAllowed) input.InputBlocker.Add("BasePlayerState")`. PlayerPickupState leaves
+    /// isInputAllowed at its default false, so the blocker is added mid-approach and StopMove zeroes
+    /// the velocity. PlayerHarvestState overrides `isInputAllowed => true`, so that Add never runs on
+    /// activation and there is no walk-through halt to suppress. (Harvest can still StopMove when a
+    /// harvest animation begins, via its own "PlayerHarvestState" blocker key, but that's a deliberate
+    /// stationary action, not the reported stutter.) So these patches gate on PlayerPickupState only;
+    /// mirroring them onto harvest would suppress a halt harvest does not have.
     /// </summary>
     internal static class PickupStutterPatches
     {

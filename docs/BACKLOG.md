@@ -11,8 +11,13 @@ _None._
 
 - **Finish or shelve the WIP pickup-stutter feature (Feature 2).** It's committed but unreleased
   (`PickupStutterPatches`). Before it ships it needs: a real in-game confirmation the stutter is
-  gone, a check that `PlayerHarvestState` doesn't want the same treatment, and its own CHANGELOG +
-  version bump. Until then it rides along in the DLL, off no config path unless `ApplyToPickup`.
+  gone, and its own CHANGELOG + version bump. Until then it rides along in the DLL, on no config
+  path unless `ApplyToPickup`.
+  - ✅ **Resolved (2026-08-22, decompile analysis):** harvest does **not** want the same treatment.
+    The activation-time halt comes from `BasePlayerState.OnActivate`'s
+    `if (!isInputAllowed) InputBlocker.Add("BasePlayerState")`; `PlayerHarvestState` overrides
+    `isInputAllowed => true` so that Add never runs and there is no walk-through halt to suppress.
+    Pickup-only scope is correct. See the `PickupStutterPatches` class doc and [DECISIONS.md](DECISIONS.md).
 
 ## P2 — nice-to-have
 

@@ -3,6 +3,17 @@
 Why the mod is shaped the way it is. Newest first. Workspace-wide conventions live in
 [../../../docs/DECISIONS.md](../../docs/DECISIONS.md).
 
+## 2026-08-22 — Scope the pickup-stutter fix to pickup only, not harvest
+
+**Decision.** `PickupStutterPatches` gates on `PlayerPickupState` alone; harvest is intentionally
+left untouched.
+**Why.** Decompiling `BasePlayerState`/`PlayerHarvestState` showed the stutter's root cause — the
+activation-time `input.InputBlocker.Add("BasePlayerState")` → `StopMove()` velocity-zero — only runs
+`if (!isInputAllowed)`. `PlayerHarvestState` overrides `isInputAllowed => true`, so that Add never
+fires on activation; harvest has no walk-through halt to suppress.
+**Rejected.** Mirroring the patches onto `PlayerHarvestState` — it would suppress a halt harvest
+doesn't have, and harvest's timer fields (`harvestAfter`/`harvestLength`) differ from pickup's anyway.
+
 ## 2026-08-22 — Split patches by feature; extract a shared form-protection policy
 
 **Decision.** Move from one `FormPatches.cs` to `FormRetentionPatches.cs` + `PickupStutterPatches.cs`,
