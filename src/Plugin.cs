@@ -91,7 +91,8 @@ namespace FormLock
                     null,
                     DiagnosticsSection, "ModMenu.Label=Verbose logging"));
 
-            harmony.PatchAll(typeof(FormPatches));
+            harmony.PatchAll(typeof(FormRetentionPatches));
+            harmony.PatchAll(typeof(PickupStutterPatches));
 
             Log.LogInfo($"{PluginName} {PluginVersion} loaded. Read-only: nothing is written to your save.");
         }
