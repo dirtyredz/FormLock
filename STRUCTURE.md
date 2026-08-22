@@ -16,9 +16,7 @@ runtime state beyond one save/restore sentinel. Everything is in `src/`, one cla
 | `src/Plugin.cs` | BepInEx entry point: metadata, config binding, Harmony bootstrap | `FormLockPlugin`. Binds the 7 config entries; `PatchAll`s both patch classes. Version comes from `ModBuildInfo.Version` (generated), never hardcoded. |
 | `src/FormProtection.cs` | **Policy** — "is the player holding a form we're configured to keep?" | `FormProtection`. One predicate (`TryGetProtectedForm`) + the form-subtype→config-flag map (`IsFormEnabled`). Shared by both patch classes so neither depends on the other. |
 | `src/FormRetentionPatches.cs` | **Feature 1 (shipped 1.0.0)** — keep form through pickup/harvest | `FormRetentionPatches`. A single Harmony prefix on `GameInventory.TryGrabNone`. |
-| `src/FormPickupStutterPatches.cs`* | **Feature 2 (WIP)** — kill the movement stutter on form pickups | `PickupStutterPatches`. Prefix on `CharacterMover.StopMove`; prefix+postfix on `PlayerPickupState.OnActivate`; postfix on `PlayerPickupState.OnDeactivate`; owns the `_savedPickup*` timing sentinel. |
-
-\* file is `src/PickupStutterPatches.cs` (class `PickupStutterPatches`).
+| `src/PickupStutterPatches.cs` | **Feature 2 (WIP)** — kill the movement stutter on form pickups | `PickupStutterPatches`. Prefix on `CharacterMover.StopMove`; prefix+postfix on `PlayerPickupState.OnActivate`; postfix on `PlayerPickupState.OnDeactivate`; owns the `_savedPickup*` timing sentinel. |
 
 ## Dependency shape
 
@@ -31,7 +29,9 @@ Plugin.cs ──PatchAll──> FormRetentionPatches ─┐
 - Both patch classes read config as `FormLockPlugin` static `ConfigEntry` fields directly, and route
   the "protected form?" question through `FormProtection`. No patch class references the other.
 - `FormProtection` is the only shared code; it reads the `Keep*Form` config statics. One direction:
-  patches → policy → config. No cycles.
+  patches → policy → config statics on `FormLockPlugin`. No patch-to-patch dependency and no
+  feature-level cycle. (The patches reading `FormLockPlugin` statics is ordinary composition-root /
+  config-holder coupling, not a cycle to design away.)
 - Non-obvious game types come from `Vampire.Runtime.dll` / `Chicken.Utilities` (referenced, never
   redistributed — see [docs/GOTCHAS.md](docs/GOTCHAS.md)).
 

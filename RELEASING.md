@@ -25,10 +25,11 @@ The script reads the version from the csproj; `Plugin.cs` derives the same value
 
 ## No test project, on purpose
 
-The entire mod is one Harmony Prefix (`FormPatches.cs`) plus its BepInEx config (`Plugin.cs`).
-Every code path reads Unity and game types — `GameInventory`, `PlayerPickupState`,
-`PlayerHarvestState`, `FormToolAsset` — so a console runner outside the game could not exercise
-anything real. Verification is manual — see [TESTING.md](TESTING.md).
+The entire mod is the shipped form-retention prefix (`FormRetentionPatches.cs`), the WIP
+pickup-stutter patches (`PickupStutterPatches.cs`), a shared `FormProtection` policy, and its
+BepInEx config (`Plugin.cs`). Every code path reads Unity and game types — `GameInventory`,
+`PlayerPickupState`, `PlayerHarvestState`, `FormToolAsset` — so a console runner outside the game
+could not exercise anything real. Verification is manual — see [TESTING.md](TESTING.md).
 
 ## Pre-release checklist
 
@@ -53,7 +54,7 @@ Confirmed by hand so far:
 Still to do by hand before publishing:
 
 - [ ] **Bat Form / Aqua Form** — same code path as Cat Form (`FormToolAsset` is matched
-      generically, not per-subtype, in `FormPatches`), but neither has actually been tried in a
+      generically, not per-subtype, in `FormProtection`), but neither has actually been tried in a
       real session yet. Worth at least one pickup and one harvest per form before claiming it on
       the page.
 - [ ] **Fresh install** — delete `com.dirtyredz.moonlightpeaks.formlock.cfg`, launch, confirm
