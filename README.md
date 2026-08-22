@@ -63,14 +63,15 @@ Settings are configurable in-game via Mod Menu, or by editing the `.cfg` file di
 
 ## Status
 
-Built, deployed to `BepInEx/plugins/MoonlightPeaksMods/FormLock/`, and confirmed working in-game
-for Cat Form: staying in form through both a pickup and a bare-hand harvest. Bat Form and Aqua
-Form share the same code path but haven't been hand-tested yet.
+**v1.0.0 is published** — live on Nexus as [mod 141](https://www.nexusmods.com/moonlightpeaks/mods/141).
+Confirmed working in-game for Cat Form (staying in form through both a pickup and a bare-hand
+harvest); Bat Form and Aqua Form share the same code path but haven't been hand-tested yet.
 
-Preparing for a 1.0.0 release — see [RELEASING.md](RELEASING.md) for the checklist,
-[TESTING.md](TESTING.md) for what's been verified, [CHANGELOG.md](CHANGELOG.md) for the release
-notes, and [NEXUS.md](NEXUS.md) / [nexus-paste.md](nexus-paste.md) for the page copy. Not yet
-published.
+A follow-up **pickup-stutter suppression** feature is committed but **not yet released** — see
+[docs/ROADMAP.md](docs/ROADMAP.md) and [docs/BACKLOG.md](docs/BACKLOG.md) for what it needs before
+it ships. Release plumbing: [RELEASING.md](RELEASING.md) (checklist), [TESTING.md](TESTING.md)
+(verified behaviour), [CHANGELOG.md](CHANGELOG.md) (release notes), and
+[NEXUS.md](NEXUS.md) / [nexus-paste.md](nexus-paste.md) (page copy).
 
 ## Testing note
 
