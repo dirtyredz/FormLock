@@ -80,7 +80,7 @@ namespace FormLock
 
                 var t = Traverse.Create(__instance);
                 _savedPickupDurationAfter = t.Field("pickupDurationAfter").GetValue<float>();
-                _savedPickupDuration      = t.Field("pickupDuration").GetValue<float>();
+                _savedPickupDuration = t.Field("pickupDuration").GetValue<float>();
                 t.Field("pickupDurationAfter").SetValue(0f);
                 t.Field("pickupDuration").SetValue(0f);
 
@@ -137,7 +137,7 @@ namespace FormLock
             }
             finally
             {
-                _savedPickupDuration      = -1f;
+                _savedPickupDuration = -1f;
                 _savedPickupDurationAfter = -1f;
             }
         }
