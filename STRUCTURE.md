@@ -8,22 +8,51 @@ System design lives in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 ## The whole mod, at a glance
 
 A BepInEx 5 / HarmonyX plugin for the Unity Mono game *Moonlight Peaks*. Two small features, no
-runtime state beyond one save/restore sentinel. Everything is in `src/`, one class per file, flat
-(no `src/FormLock/` nesting — workspace convention).
+runtime state beyond one save/restore sentinel. All code is in `src/`, one class per file: the
+BepInEx entry point sits at the `src/` root beside the `.csproj`, and everything that touches the
+running game (the Harmony patches plus the guard they share) lives in `src/game/`.
 
 | File | Responsibility | Notes |
 |------|----------------|-------|
 | `src/Plugin.cs` | BepInEx entry point: metadata, config binding, Harmony bootstrap | `FormLockPlugin`. Binds the 7 config entries; `PatchAll`s both patch classes. Version comes from `ModBuildInfo.Version` (generated), never hardcoded. |
-| `src/FormProtection.cs` | **Policy** — "is the player holding a form we're configured to keep?" | `FormProtection`. One predicate (`TryGetProtectedForm`) + the form-subtype→config-flag map (`IsFormEnabled`). Shared by both patch classes so neither depends on the other. |
-| `src/FormRetentionPatches.cs` | **Feature 1 (shipped 1.0.0)** — keep form through pickup/harvest | `FormRetentionPatches`. A single Harmony prefix on `GameInventory.TryGrabNone`. |
-| `src/PickupStutterPatches.cs` | **Feature 2 (WIP)** — kill the movement stutter on form pickups | `PickupStutterPatches`. Prefix on `CharacterMover.StopMove`; prefix+postfix on `PlayerPickupState.OnActivate`; postfix on `PlayerPickupState.OnDeactivate`; owns the `_savedPickup*` timing sentinel. |
+| `src/game/FormProtection.cs` | **Policy** — "is the player holding a form we're configured to keep?" | `FormProtection`. One predicate (`TryGetProtectedForm`) + the form-subtype→config-flag map (`IsFormEnabled`). Shared by both patch classes so neither depends on the other. |
+| `src/game/FormRetentionPatches.cs` | **Feature 1 (shipped 1.0.0)** — keep form through pickup/harvest | `FormRetentionPatches`. A single Harmony prefix on `GameInventory.TryGrabNone`. |
+| `src/game/PickupStutterPatches.cs` | **Feature 2 (WIP)** — kill the movement stutter on form pickups | `PickupStutterPatches`. Prefix on `CharacterMover.StopMove`; prefix+postfix on `PlayerPickupState.OnActivate`; postfix on `PlayerPickupState.OnDeactivate`; owns the `_savedPickup*` timing sentinel. |
+
+## Layout
+
+```
+FormLock/
+├── src/
+│   ├── FormLock.csproj        # SDK-style: **/*.cs globs recursively, so folders need no csproj edit
+│   ├── Plugin.cs              # BepInEx entry point — stays beside the .csproj at the src/ root
+│   └── game/                  # everything that touches the running game
+│       ├── FormProtection.cs        # guard: reads live GameInventory state, form asset → config flag
+│       ├── FormRetentionPatches.cs  # Harmony prefix on GameInventory.TryGrabNone
+│       └── PickupStutterPatches.cs  # Harmony patches on CharacterMover / PlayerPickupState
+├── scripts/                   # repo shell tooling (git-hook install + pre-commit)
+├── docs/                      # ARCHITECTURE, DECISIONS, FEATURES, ROADMAP, BACKLOG, GOTCHAS
+├── screenshots/               # Nexus banner + thumbnail
+└── pack.ps1                   # workspace-synced release packager (must stay at the repo root)
+```
+
+No `src/ui/` and no `src/core/`: this mod draws no UI, and its only "logic" is a guard over live
+game state — a game concern, not domain state of its own. Create either folder when (and only when)
+a file genuinely belongs in it.
+
+**Enforced homes:**
+
+- `src/game/` — Harmony patches and live-game bridges
+- `scripts/` — repo shell tooling (git-hook install, pre-commit)
+- `src/Plugin.cs` — BepInEx entry point; the plugin class must sit beside the `.csproj`
+- `pack.ps1` — workspace-synced release packager; the sync tool writes it to the repo root
 
 ## Dependency shape
 
 ```
-Plugin.cs ──PatchAll──> FormRetentionPatches ─┐
-        └──PatchAll──> PickupStutterPatches ──┤
-                                              └─> FormProtection (policy) ─> FormLockPlugin.Keep*Form (config)
+src/Plugin.cs ──PatchAll──> game/FormRetentionPatches ─┐
+             └──PatchAll──> game/PickupStutterPatches ──┤
+                                                        └─> game/FormProtection (policy) ─> FormLockPlugin.Keep*Form (config)
 ```
 
 - Both patch classes read config as `FormLockPlugin` static `ConfigEntry` fields directly, and route
@@ -52,10 +81,10 @@ found — and this pass **fixed** — the two P1 items below; the rest are consc
 tracked in [docs/BACKLOG.md](docs/BACKLOG.md).
 
 - ✅ **Fixed — two features in one file.** `FormPatches.cs` had grown to hold both the shipped
-  form-retention patch and the WIP pickup-stutter patches. Split into `FormRetentionPatches.cs`
-  + `PickupStutterPatches.cs`, each with an accurate class-level doc.
+  form-retention patch and the WIP pickup-stutter patches. Split into `game/FormRetentionPatches.cs`
+  + `game/PickupStutterPatches.cs`, each with an accurate class-level doc.
 - ✅ **Fixed — 4× duplicated guard.** The "is this a protected grabbed form?" check was copy-pasted
-  across four patch bodies. Extracted to `FormProtection.TryGetProtectedForm`; `IsFormEnabled`
+  across four patch bodies. Extracted to `game/FormProtection.TryGetProtectedForm`; `IsFormEnabled`
   moved there too so it has a neutral home.
 - ⏳ **P2 (deferred)** — the `MonoBehaviourSingleton<PlayerView>` current-state fetch appears ~2×
   with slightly different shapes. Reviewers split on whether a helper earns its keep at 2 uses;

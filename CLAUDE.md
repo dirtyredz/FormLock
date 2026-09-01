@@ -5,7 +5,8 @@ workspace; treat it as the active project (honor **its** gate/baseline, not the 
 lives in the doc set — read those, don't duplicate them here.
 
 - **[README.md](README.md)** — human quick-start + what the mod fixes.
-- **[STRUCTURE.md](STRUCTURE.md)** — where things live (4 source files, one class each).
+- **[STRUCTURE.md](STRUCTURE.md)** — where things live (4 source files, one class each) + the
+  enforced `## Layout` contract.
 - **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — how the patches work at runtime.
 - **[docs/DECISIONS.md](docs/DECISIONS.md) · [FEATURES.md](docs/FEATURES.md) ·
   [ROADMAP.md](docs/ROADMAP.md) · [BACKLOG.md](docs/BACKLOG.md) · [GOTCHAS.md](docs/GOTCHAS.md)**
@@ -28,7 +29,10 @@ by the maintainer (see TESTING.md).
 - **Commit identity:** `dirtyredz <dirtyredz@live.com>`. Never the work email.
 - **Versioning:** bump `<Version>` in `src/FormLock.csproj` only, only when publishing. Never
   hardcode a version in `Plugin.cs` (it derives `ModBuildInfo.Version`).
-- **Layout:** plugin `.cs` flat in `src/` (no `src/FormLock/`); docs + `pack.ps1` at repo root.
+- **Layout:** `src/Plugin.cs` (the BepInEx entry point) stays at the `src/` root beside the
+  `.csproj`; game-facing code (Harmony patches + the guard they share) lives in `src/game/`; docs +
+  `pack.ps1` at repo root. The enforced homes are declared in [STRUCTURE.md](STRUCTURE.md)’s
+  `## Layout` — add a bullet there before introducing a new folder.
 - **`Directory.Build.props` + `pack.ps1` are workspace-synced canonicals** — edit the workspace
   source (`../../tools/sync-mod-files.ps1`), not the copies here.
 - **Never commit** decompiled game code, `dist/`, `bin/`, `obj/`.
