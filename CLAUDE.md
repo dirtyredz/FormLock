@@ -48,3 +48,10 @@ pending. `Last full review:` is stamped in [STRUCTURE.md](STRUCTURE.md).
 
 Pack with `./pack.ps1` → `dist/FormLock-<version>.zip` (Nexus layout). Publish via the workspace
 **nexus-publish** skill. Full chain: [../../docs/ARCHITECTURE.md](../../docs/ARCHITECTURE.md).
+
+## Work items (Docket)
+
+Track work in `docs/items/` through `dk`. Use filtered `dk list --json` and `dk show`; use `add`, `set`,
+and `link` for changes. Never invent IDs or ranks. Claim work in the current worktree, release it when
+finished, and run `dk check` before pushing. Drop items instead of deleting them. Living docs remain
+ordinary Markdown.
